@@ -1,0 +1,38 @@
+pragma solidity 0.4.24;
+import 'browser/Nostradamus.sol';
+
+contract solveNostradamusChallange {
+
+    Nostradamus nostradamus;
+    
+    constructor() public {
+    }
+    
+    function earnBraggingRights(address nostradamusAddress) public returns(uint blockNumber){
+        nostradamus = Nostradamus(nostradamusAddress);
+        bytes32 currentBlockHash = getCurrentBlocksHash(nostradamusAddress);
+        bytes32 braggingText = stringToBytes32("Icarus brags..");
+        nostradamus.prophecise(currentBlockHash, braggingText);
+        require(nostradamus.prophets(this) == true);
+        return (block.number);
+    }
+    
+    function getCurrentBlocksHash(address nostradamusAddress) private view returns(bytes32 exact) {
+        uint blockNumber = block.number;
+        bytes32 blockHash = blockhash(block.number);
+        uint256 timestamp = block.timestamp;
+        return keccak256(abi.encodePacked(this, blockNumber, blockHash, timestamp, nostradamusAddress));
+    }
+    
+    function stringToBytes32(string memory source) private pure returns (bytes32 result) {
+        bytes memory tempEmptyStringTest = bytes(source);
+        if (tempEmptyStringTest.length == 0) {
+         return 0x0;
+        }
+        assembly {
+         result := mload(add(source, 32))
+    }
+}
+
+
+}
